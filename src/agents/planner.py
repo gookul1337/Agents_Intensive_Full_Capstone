@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from src.tools import ToolRegistry
 
 class PlannerAgent:
     def __init__(self, name='Planner'):
