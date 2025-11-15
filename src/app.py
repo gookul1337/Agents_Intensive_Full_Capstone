@@ -2,6 +2,8 @@ import os, argparse, json
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from orchestrator import Orchestrator
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 app = Flask(__name__, template_folder=TEMPLATE_DIR), static_folder='static')
 
 @app.route('/')
