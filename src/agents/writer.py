@@ -1,11 +1,14 @@
-from tools import ToolRegistry
-
+from typing import List, Dict, Any
 
 class WriterAgent:
-    def __init__(self, name='Writer'):
+    def __init__(self, name="Writer"):
         self.name = name
 
-    def write(self, prompt:str, research_outputs:List[Dict[str,Any]])->Dict[str,Any]:
-        combined = '\n'.join([r['summary'] for r in research_outputs])
-        answer = f"Composed answer for: {prompt}\n\nSources summary:\n{combined}\n\nFinal:\nThis is a generated answer (placeholder)."
-        return {'agent': self.name, 'answer': answer}
+    def write(self, query: str, research_outputs: List[Dict[str, Any]]) -> Dict[str, Any]:
+        combined = "\n".join([r["result"] for r in research_outputs])
+        draft = f"Draft for '{query}':\n\n{combined}"
+        return {
+            "agent": self.name,
+            "action": "write",
+            "draft": draft
+        }
