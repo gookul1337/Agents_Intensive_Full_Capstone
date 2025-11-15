@@ -1,27 +1,22 @@
-import os, argparse, json
-from flask import Flask, render_template, request, jsonify, send_from_directory
-from orchestrator import Orchestrator
+import os
+from flask import Flask, render_template, request, jsonify
+from orchestrator import run_agents
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-app = Flask(__name__, template_folder=TEMPLATE_DIR), static_folder='static')
+# ABSOLUTE PATH TO YOUR TEMPLATE FOLDER
+TEMPLATE_DIR = "/home/gookul1337/Agents_Intensive_Full_Capstone/templates"
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/api/run', methods=['POST'])
-def api_run():
-    payload = request.json or {}
-    query = payload.get('query', 'Summarize Agents Intensive capstone')
-    n = int(payload.get('n', 3))
-    steps = int(payload.get('steps', 5))
-    orch = Orchestrator(n_agents=n)
-    timeline = orch.run(query=query, steps=steps)
-    return jsonify({'status': 'ok', 'timeline': timeline})
+@app.route('/run', methods=['POST'])
+def run():
+    data = request.json
+    n_agents = int(data.get("num_agents", 3))
+    result = run_agents(n_agents)
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--port', type=int, default=int(os.environ.get('PORT', 5000)))
-    args = parser.parse_args()
-    app.run(host='0.0.0.0', port=args.port, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
