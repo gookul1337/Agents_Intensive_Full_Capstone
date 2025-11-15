@@ -1,34 +1,37 @@
+from typing import List, Dict, Any
+
 from agents.planner import PlannerAgent
-from agents.researcher import ResearcherAgent
+from agents.research import ResearchAgent
 from agents.writer import WriterAgent
 from agents.reviewer import ReviewerAgent
 
-
 class Orchestrator:
-    def __init__(self, n_agents:int=3):
-        # n_agents currently influences internal config; we create one of each role
-        self.planner = PlannerAgent('Planner-1')
-        self.research = ResearchAgent('Research-1', tool_registry=ToolRegistry())
-        self.writer = WriterAgent('Writer-1')
-        self.reviewer = ReviewerAgent('Reviewer-1')
+    def __init__(self):
+        self.planner = PlannerAgent()
+        self.researcher = ResearchAgent()
+        self.writer = WriterAgent()
+        self.reviewer = ReviewerAgent()
 
-    def run(self, query:str, steps:int=3) -> List[Dict[str,Any]]:
+    def run(self, query: str) -> List[Dict[str, Any]]:
         timeline = []
-        # Planner decomposes task
+
+        # Step 1: Planning
         plan = self.planner.plan(query)
-        timeline.append({'step': 'plan', 'output': plan})
-        research_outputs = []
-        for sub in plan.get('subtasks', []):
-            r = self.research.research(sub)
-            timeline.append({'step': 'research', 'subtask': sub, 'output': r})
-            research_outputs.append(r)
-        # Writer composes
-        draft = self.writer.write(query, research_outputs)
-        timeline.append({'step': 'write', 'output': draft})
-        # Reviewer validates
+        timeline.append(plan)
+
+        # Step 2: Research
+        research_results = []
+        for task in plan["subtasks"]:
+            r = self.researcher.research(task)
+            research_results.append(r)
+        timeline.append({"agent": "ResearchAgent", "action": "research", "output": research_results})
+
+        # Step 3: Writing
+        draft = self.writer.write(query, research_results)
+        timeline.append(draft)
+
+        # Step 4: Review
         review = self.reviewer.review(draft)
-        timeline.append({'step': 'review', 'output': review})
-        # final
-        final = {'answer': draft.get('answer'), 'approved': review.get('approved'), 'issues': review.get('issues')}
-        timeline.append({'step': 'final', 'output': final})
+        timeline.append(review)
+
         return timeline
