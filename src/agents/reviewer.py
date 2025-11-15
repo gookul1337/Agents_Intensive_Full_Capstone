@@ -1,4 +1,5 @@
-from typing import Dict, Any
+from src.tools import ToolRegistry
+
 
 class ReviewerAgent:
     def __init__(self, name='Reviewer'):
