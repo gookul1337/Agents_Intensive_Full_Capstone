@@ -1,9 +1,7 @@
-from typing import List, Dict, Any
-from agents.planner import PlannerAgent
-from agents.research import ResearchAgent
-from agents.writer import WriterAgent
-from agents.reviewer import ReviewerAgent
-from tools import ToolRegistry
+from src.agents.planner import PlannerAgent
+from src.agents.research import ResearchAgent
+from src.agents.writer import WriterAgent
+from src.agents.reviewer import ReviewerAgent
 
 class Orchestrator:
     def __init__(self, n_agents:int=3):
