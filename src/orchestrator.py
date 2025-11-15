@@ -1,7 +1,8 @@
-from src.agents.planner import PlannerAgent
-from src.agents.research import ResearchAgent
-from src.agents.writer import WriterAgent
-from src.agents.reviewer import ReviewerAgent
+from agents.planner import PlannerAgent
+from agents.researcher import ResearcherAgent
+from agents.writer import WriterAgent
+from agents.reviewer import ReviewerAgent
+
 
 class Orchestrator:
     def __init__(self, n_agents:int=3):
