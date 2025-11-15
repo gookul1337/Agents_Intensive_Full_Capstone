@@ -1,4 +1,5 @@
-from typing import Dict, Any, List
+from src.tools import ToolRegistry
+
 
 class WriterAgent:
     def __init__(self, name='Writer'):
