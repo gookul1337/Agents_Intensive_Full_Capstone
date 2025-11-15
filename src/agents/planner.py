@@ -1,23 +1,19 @@
+from typing import Dict, Any
 from tools import ToolRegistry
 
-
 class PlannerAgent:
-    """
-    PlannerAgent breaks a user query into smaller subtasks.
-    """
+    def __init__(self, name='Planner'):
+        self.name = name
 
     def plan(self, query: str) -> Dict[str, Any]:
-        """
-        Returns a dictionary with subtasks for the orchestrator.
-        """
-        subtasks: List[str] = [
-            f"{query} - background",
-            f"{query} - specifics"
+        # simple decomposition
+        subtasks = [
+            query + " - background",
+            query + " - specifics"
         ]
 
         return {
-            "step": "plan",
-            "agent": "Planner-1",
+            "agent": self.name,
             "action": "plan",
             "subtasks": subtasks
         }
