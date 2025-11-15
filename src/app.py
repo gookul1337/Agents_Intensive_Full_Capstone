@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from orchestrator import run_agents
+from src.orchestrator import run_agents
+
 
 # Auto-detect template directory
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
