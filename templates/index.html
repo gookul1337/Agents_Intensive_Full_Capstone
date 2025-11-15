@@ -1,86 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Agents Capstone — Working UI</title>
+  <title>Agents Capstone</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    .card {
-      background: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-top: 15px;
-      white-space: pre-wrap;
-    }
-    button {
-      padding: 6px 12px;
-      background: #1976D2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0F5BB5;
-    }
+    body { font-family: Arial; margin: 20px; }
+    .card { background: #fff; padding: 12px; border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin: 10px 0; }
   </style>
 </head>
 <body>
+  <h1>Multi-Agent System — Capstone Demo</h1>
 
-  <h1>Agents Capstone — Working UI</h1>
-
-  <label>
-    Query:
-    <input id="query" style="width: 60%;" 
-           value="Explain multi-agent systems">
+  <label>Query:
+    <input id="query" style="width: 60%" value="Explain multi-agent systems">
   </label>
+  <button id="run">Run</button>
 
-  <button onclick="runQuery()">Run</button>
+  <div id="out"></div>
 
-  <div id="output" class="card"></div>
+  <script>
+    document.getElementById("run").onclick = async () => {
+      const q = document.getElementById("query").value;
 
-<script>
-async function runQuery() {
-    const query = document.getElementById("query").value;
-    const output = document.getElementById("output");
+      const res = await fetch("/api/run", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query: q})
+      });
 
-    output.innerHTML = "Processing...";
+      const data = await res.json();
+      const out = document.getElementById("out");
+      out.innerHTML = "";
 
-    try {
-        const response = await fetch("/api/run", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-
-        if (!response.ok) {
-            output.innerHTML = "Server Error: " + response.status;
-            return;
-        }
-
-        const data = await response.json();
-
-        // Display full timeline if available
-        if (data.timeline) {
-            output.innerHTML = JSON.stringify(data.timeline, null, 2);
-        }
-        // Display main response
-        else if (data.response) {
-            output.innerHTML = data.response;
-        }
-        else {
-            output.innerHTML = "Unknown Response: " + JSON.stringify(data);
-        }
-
-    } catch (err) {
-        output.innerHTML = "Fetch Error: " + err;
+      data.timeline.forEach(item => {
+        const el = document.createElement("pre");
+        el.className = "card";
+        el.innerText = JSON.stringify(item, null, 2);
+        out.appendChild(el);
+      });
     }
-}
-</script>
-
+  </script>
 </body>
 </html>
