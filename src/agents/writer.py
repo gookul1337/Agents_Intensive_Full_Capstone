@@ -1,4 +1,4 @@
-from src.tools import ToolRegistry
+from tools import ToolRegistry
 
 
 class WriterAgent:
