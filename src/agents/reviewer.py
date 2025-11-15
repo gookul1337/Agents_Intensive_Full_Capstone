@@ -1,14 +1,13 @@
-from tools import ToolRegistry
-
+from typing import Dict, Any
 
 class ReviewerAgent:
-    def __init__(self, name='Reviewer'):
+    def __init__(self, name="Reviewer"):
         self.name = name
 
-    def review(self, draft:Dict[str,Any])->Dict[str,Any]:
-        answer = draft.get('answer','')
-        issues = []
-        if len(answer) < 50:
-            issues.append('Answer too short')
-        approved = len(issues) == 0
-        return {'agent': self.name, 'approved': approved, 'issues': issues}
+    def review(self, draft: Dict[str, Any]) -> Dict[str, Any]:
+        reviewed = draft["draft"] + "\n\nReview: Looks good!"
+        return {
+            "agent": self.name,
+            "action": "review",
+            "final_output": reviewed
+        }
