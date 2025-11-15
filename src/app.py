@@ -9,12 +9,11 @@ def home():
     return render_template("index.html")
 
 @app.route("/api/run", methods=["POST"])
-def run_api():
+def api_run():
     data = request.get_json()
     query = data.get("query", "")
     timeline = orc.run(query)
     return jsonify({"timeline": timeline})
 
 if __name__ == "__main__":
-    # IMPORTANT — run on 0.0.0.0 for Cloud Shell preview
     app.run(host="0.0.0.0", port=8080, debug=True)
