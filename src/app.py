@@ -2,10 +2,14 @@ import os
 from flask import Flask, render_template, request, jsonify
 from orchestrator import run_agents
 
-# ABSOLUTE PATH TO YOUR TEMPLATE FOLDER
-TEMPLATE_DIR = "/home/gookul1337/Agents_Intensive_Full_Capstone/templates"
+
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
+
+
 
 @app.route('/')
 def index():
