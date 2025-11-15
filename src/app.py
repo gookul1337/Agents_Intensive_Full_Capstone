@@ -2,7 +2,7 @@ import os, argparse, json
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from orchestrator import Orchestrator
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+app = Flask(__name__, template_folder=TEMPLATE_DIR), static_folder='static')
 
 @app.route('/')
 def index():
