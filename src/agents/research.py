@@ -2,7 +2,7 @@ import os
 import json
 import requests
 
-from src.tools import web_search_stub, summarize_stub, ToolRegistry
+from tools import ToolRegistry
 
 
 class ResearchAgent:
