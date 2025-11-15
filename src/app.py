@@ -1,28 +1,20 @@
-import os
-from flask import Flask, render_template, request, jsonify
-from src.orchestrator import run_agents
+from flask import Flask, request, jsonify, render_template
+from orchestrator import Orchestrator
 
+app = Flask(__name__, template_folder="../templates")
+orc = Orchestrator()
 
-# Auto-detect template directory
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-
-print("Using templates from:", TEMPLATE_DIR)
-
-app = Flask(__name__, template_folder=TEMPLATE_DIR)
-
-@app.route('/')
-def index():
+@app.route("/")
+def home():
     return render_template("index.html")
 
-@app.route('/run', methods=['POST'])
-def run():
-    data = request.json
-    n_agents = int(data.get("num_agents", 3))
-    result = run_agents(n_agents)
-    return jsonify({"result": result})
+@app.route("/api/run", methods=["POST"])
+def run_api():
+    data = request.get_json()
+    query = data.get("query", "")
+    timeline = orc.run(query)
+    return jsonify({"timeline": timeline})
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, debug=True)
-
+    # IMPORTANT — run on 0.0.0.0 for Cloud Shell preview
+    app.run(host="0.0.0.0", port=8080, debug=True)
