@@ -1,50 +1,78 @@
 import os
+import json
 import requests
 
-API_KEY = os.getenv("GOOGLE_SEARCH_API_KEY")
+from src.tools import web_search_stub, summarize_stub, ToolRegistry
+
 
 class ResearchAgent:
     """
-    Research agent using Google's NEW Web Search API (API Studio).
+    Research agent that uses Google API Studio Web Search.
+    Falls back to stub mode if API key is missing.
     """
 
-    def run(self, query):
-        if not API_KEY:
-            return {
-                "query": query,
-                "summary": "ERROR: Missing GOOGLE_SEARCH_API_KEY.",
-                "hits": []
-            }
+    def __init__(self):
+        self.api_key = os.getenv("GOOGLE_SEARCH_API_KEY")
+        self.use_stub = self.api_key is None or self.api_key.strip() == ""
 
-        url = "https://websearch.googleapis.com/v1/web:search"
+        if self.use_stub:
+            print("⚠️ GOOGLE_SEARCH_API_KEY not found — using stub search mode.")
+        else:
+            print("✅ Google Web Search API enabled.")
 
+    def google_search(self, query):
+        """
+        Real web search via Google API Studio Web Search.
+        """
+        url = "https://search.googleapis.com/v1/web:search"
         params = {
             "q": query,
-            "key": API_KEY,
-            "num": 5
+            "key": self.api_key,
         }
 
-        try:
-            response = requests.get(url, params=params)
-            data = response.json()
+        response = requests.get(url, params=params)
 
-            items = data.get("results", [])
-            top_items = items[:3]
-
-            summary = (
-                top_items[0]["snippet"]
-                if top_items else "No real search results found."
-            )
-
+        if response.status_code != 200:
             return {
                 "query": query,
-                "summary": summary,
-                "hits": top_items
-            }
-
-        except Exception as error:
-            return {
-                "query": query,
-                "summary": f"Search error: {error}",
+                "summary": "Search failed",
                 "hits": []
             }
+
+        data = response.json()
+
+        hits = []
+        for item in data.get("results", []):
+            hits.append({
+                "title": item.get("title", ""),
+                "snippet": item.get("snippet", "")
+            })
+
+        # Summarize based on snippets
+        summary_text = "\n".join([h["snippet"] for h in hits]) or "No results found"
+
+        return {
+            "query": query,
+            "summary": summary_text,
+            "hits": hits
+        }
+
+    def run(self, query: str):
+        """
+        Main method: performs search and summarization.
+        """
+        if self.use_stub:
+            # Use fallback stub implementations
+            return {
+                "query": query,
+                "summary": summarize_stub(query),
+                "hits": web_search_stub(query)
+            }
+
+        # Real search
+        result = self.google_search(query)
+
+        # Extra summarization (optional)
+        result["summary"] = summarize_stub(result["summary"])
+
+        return result
